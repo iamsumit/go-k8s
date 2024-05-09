@@ -1,5 +1,7 @@
 # go-k8s
 
+This repository is for my learning purpose only, big thanks to the [Kubernetes 101](https://www.youtube.com/playlist?list=PL2_OBreMn7FoYmfx27iSwocotjiikS5BD) by Jeff Geerling.
+
 Run following commands to see it in working locally:
 
 ```

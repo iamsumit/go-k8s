@@ -17,7 +17,7 @@ deploy:
 
 	# Or we can do this way as well.
 	# kubectl create deployment go-k8s --image=$(IMAGE_NAME)
-	# kubectl expose deployment go-k8s --type=NodePort --port=8080
+	# kubectl expose deployment go-k8s --type=NodePort --port=80 --target=8080
 
 clean:
 	docker rmi -f $(IMAGE_NAME)

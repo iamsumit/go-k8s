@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+  creationTimestamp: "2024-05-09T17:29:54Z"
+  generation: 2
+  labels:
+    app: go-k8s-pvt
+  name: go-k8s-pvt
+  namespace: default
+  resourceVersion: "14974"
+  uid: ff603a3a-f963-4b2d-9ed7-4e4de63fa962
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: go-k8s-pvt
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: go-k8s-pvt
+    spec:
+      containers:
+      - image: sumitpantheon/go-k8s
+        imagePullPolicy: Always
+        name: go-k8s
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      # regcred is the kubectl secret name which is used to pull the image from the private registry
+      #   kubectl create secret docker-registry regcred 
+      #       --docker-username=sumitpantheon 
+      #       --docker-password=token-generated-at-dockerhub
+      #       --docker-email=reg-email-address@gmail.com
+      # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+      imagePullSecrets:
+      - name: regcred
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2024-05-09T17:39:58Z"
+    lastUpdateTime: "2024-05-09T17:39:58Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2024-05-09T17:29:54Z"
+    lastUpdateTime: "2024-05-09T17:39:58Z"
+    message: ReplicaSet "go-k8s-pvt-fdcf67b88" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
