@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: go-k8s
+  name: go-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-k8s
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: go-k8s
+    spec:
+      containers:
+      - image: sumitpantheon/go-k8s
+        name: go-k8s
+        resources: {}
+status: {}
