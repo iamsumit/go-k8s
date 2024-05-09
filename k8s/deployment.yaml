@@ -18,7 +18,7 @@ spec:
         app: go-k8s
     spec:
       containers:
-      - image: sumitpantheon/go-k8s
+      - image: iamsumit/go-k8s:v1
         name: go-k8s
         resources: {}
 status: {}
