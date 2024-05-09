@@ -19,10 +19,12 @@ func main() {
 	router := http.NewServeMux()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Request received")
 		w.Write([]byte("Hello, World!"))
 	})
 
 	router.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Request received")
 		w.Write([]byte("Hello!"))
 	})
 

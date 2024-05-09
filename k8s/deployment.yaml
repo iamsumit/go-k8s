@@ -6,7 +6,7 @@ metadata:
     app: go-k8s
   name: go-k8s
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: go-k8s
