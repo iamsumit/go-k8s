@@ -24,6 +24,23 @@ spec:
       containers:
       - image: iamsumit/go-k8s:v1
         name: go-k8s
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+        # Allocate limited resources to the container
+        resources:
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+            requests:
+              cpu: '250m'
+              memory: '256Mi'
 
 ---
 apiVersion: v1
@@ -41,3 +58,21 @@ spec:
   selector:
     app: go-k8s
   type: NodePort
+
+---
+# Horizontal Autoscaling needs ./metrics-server to be deployed on kubernetes.
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: go-k8s
+spec:
+  maxReplicas: 5
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: go-k8s
+  targetCPUUtilizationPercentage: 10
+status:
+  currentReplicas: 0
+  desiredReplicas: 0

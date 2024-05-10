@@ -2,6 +2,7 @@
 
 IMAGE_NAME := iamsumit/go-k8s:v1
 K8S_MANIFEST := ./k8s/goapp.yaml
+K8S_METRICS_SERVER := ./k8s/metrics-server.yaml
 
 .PHONY: all build push deploy clean start
 
@@ -11,6 +12,8 @@ build:
 	docker build -t $(IMAGE_NAME) .
 
 deploy:
+	minikube addons enable metrics-server
+	kubectl apply -f ${K8S_METRICS_SERVER}
 	kubectl apply -f $(K8S_MANIFEST)
 
 	# Or we can do this way as well.
@@ -21,6 +24,7 @@ deploy:
 clean:
 	docker rmi -f $(IMAGE_NAME)
 	kubectl delete -f $(K8S_MANIFEST)
+	kubectl delete -f ${K8S_METRICS_SERVER}
 
 	# Or we can do this way as well.
 	# kubectl delete namespace go-k8s
