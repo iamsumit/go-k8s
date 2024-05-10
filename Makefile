@@ -1,8 +1,7 @@
 .ONESHELL:
 
 IMAGE_NAME := iamsumit/go-k8s:v1
-K8S_DEPLOYMENT := ./k8s/deployment.yaml
-K8S_SERVICE := ./k8s/service.yaml
+K8S_MANIFEST := ./k8s/goapp.yaml
 
 .PHONY: all build push deploy clean start
 
@@ -12,21 +11,21 @@ build:
 	docker build -t $(IMAGE_NAME) .
 
 deploy:
-	kubectl apply -f $(K8S_DEPLOYMENT)
-	kubectl apply -f $(K8S_SERVICE)
+	kubectl apply -f $(K8S_MANIFEST)
 
 	# Or we can do this way as well.
+	# kubectl create namespace go-k8s
 	# kubectl create deployment go-k8s --image=$(IMAGE_NAME)
 	# kubectl expose deployment go-k8s --type=NodePort --port=80 --target=8080
 
 clean:
 	docker rmi -f $(IMAGE_NAME)
-	kubectl delete -f $(K8S_DEPLOYMENT)
-	kubectl delete -f $(K8S_SERVICE)
+	kubectl delete -f $(K8S_MANIFEST)
 
 	# Or we can do this way as well.
+	# kubectl delete namespace go-k8s
 	# kubectl delete deployment go-k8s
 	# kubectl delete service go-k8s
 
 start:
-	minikube service go-k8s
+	minikube service -n go-k8s go-k8s

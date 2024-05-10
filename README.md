@@ -29,4 +29,7 @@ kubectl rollout history deployment go-k8s
 
 # To rollback to last version.
 kubectl rollout undo deployment go-k8s
+
+# For benchmark testing
+ab -n 5000 -c 50 http://127.0.0.1:51270/hello
 ```
