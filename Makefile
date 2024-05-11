@@ -3,6 +3,7 @@
 IMAGE_NAME := iamsumit/go-k8s:v1
 K8S_MANIFEST := ./k8s/goapp.yaml
 K8S_METRICS_SERVER := ./k8s/metrics-server.yaml
+K8S_INGRESS := ./k8s/goapp-ingress-cert.yaml
 
 .PHONY: all build push deploy clean start
 
@@ -13,23 +14,18 @@ build:
 
 deploy:
 	minikube addons enable metrics-server
+	minikube addons enable ingress
 	kubectl apply -f ${K8S_METRICS_SERVER}
 	kubectl apply -f $(K8S_MANIFEST)
-
-	# Or we can do this way as well.
-	# kubectl create namespace go-k8s
-	# kubectl create deployment go-k8s --image=$(IMAGE_NAME)
-	# kubectl expose deployment go-k8s --type=NodePort --port=80 --target=8080
+	# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=go-k8s.local"
+	# kubectl create secret tls go-k8s-openssl --cert=tls.crt --key=tls.key
+	kubectl apply -f $(K8S_INGRESS)
 
 clean:
-	docker rmi -f $(IMAGE_NAME)
+	kubectl delete -f $(K8S_INGRESS)
 	kubectl delete -f $(K8S_MANIFEST)
 	kubectl delete -f ${K8S_METRICS_SERVER}
-
-	# Or we can do this way as well.
-	# kubectl delete namespace go-k8s
-	# kubectl delete deployment go-k8s
-	# kubectl delete service go-k8s
+	docker rmi -f $(IMAGE_NAME)
 
 start:
 	minikube service -n go-k8s go-k8s

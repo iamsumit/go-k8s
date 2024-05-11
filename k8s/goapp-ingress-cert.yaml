@@ -1,0 +1,50 @@
+# kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.crds.yaml
+# kubectl create namespace cert-manager
+# kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: go-k8s-ci
+  namespace: go-k8s
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: go-k8s-selfsigned-cert
+  namespace: go-k8s
+spec:
+  dnsNames:
+    - go-k8s.local
+  secretName: gok8s-selfsigned-cs
+  issuerRef:
+    name: go-k8s-ci
+---
+# https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-k8s-ingress
+  namespace: go-k8s
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    cert-manager.io/issuer: go-k8s-ci
+spec:
+  tls:
+    - hosts:
+        - go-k8s.local
+      secretName: gok8s-selfsigned-cs
+      # secretName: go-k8s-openssl
+  rules:
+    - host: go-k8s.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: go-k8s
+                port:
+                  number: 8080
