@@ -6,6 +6,18 @@ metadata:
 data:
   SVC1_ENDPOINT: "http://svc1-name"
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: svc2-storage
+  namespace: go-k8s
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,6 +45,8 @@ spec:
             configMapKeyRef:
               name: svc2-config
               key: SVC1_ENDPOINT
+        - name: SVC2_FILES_DIR
+          value: "/files"
         livenessProbe:
           httpGet:
             path: /
@@ -49,7 +63,13 @@ spec:
             requests:
               cpu: '250m'
               memory: '256Mi'
-
+        volumeMounts:
+        - name: svc2-storage
+          mountPath: "/files"
+      volumes:
+      - name: svc2-storage
+        persistentVolumeClaim:
+          claimName: svc2-storage
 ---
 apiVersion: v1
 kind: Service

@@ -34,6 +34,8 @@ deploy:
 
 clean:
 		@echo "Deleting resources..."
+		docker image rmi -f ${SVC1_IMAGE}
+		docker image rmi -f ${SVC2_IMAGE}
 		kubectl delete -f $(MANIFEST_DIR)
 
 start:
