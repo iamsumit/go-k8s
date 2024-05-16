@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: svc1
+  namespace: go-k8s
+  labels:
+    app: svc1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: svc1
+  template:
+    metadata:
+      labels:
+        app: svc1
+    spec:
+      containers:
+      - image: ttl.sh/iamsumit/svc1:go-k8s
+        name: svc1
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+        resources:
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+            requests:
+              cpu: '250m'
+              memory: '256Mi'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc1-name
+  namespace: go-k8s
+  labels:
+    app: svc1
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: svc1
+  type: ClusterIP
+
+---
+# metrics-server can be used to collect the resource usage metric.
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: svc1
+  namespace: go-k8s
+spec:
+  maxReplicas: 5
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: svc1
+  targetCPUUtilizationPercentage: 10
